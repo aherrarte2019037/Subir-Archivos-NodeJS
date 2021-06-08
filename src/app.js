@@ -23,18 +23,20 @@ app.get('/', (req, res) => {
 });
 
 
-app.post('/upload', async(req, res) => {
+app.post('/upload/profileImage', async(req, res) => {
     
     if( !req.files ) return res.status(400).send({ fileUploaded: false, error: 'No file found' });
+    if( !req.body.user ) return res.status(400).send({ fileUploaded: false, error: 'Missing data' });
 
+    const user = req.body.user;
     const file = req.files?.file;
     const type = file.mimetype.split('/')[1];
-    const filename = file.name.split('.')[0].concat( '-', format( new Date, 'mm-ss-SS' ), '.', type );
+    const filename = `profileImg-${user}.${type}`
 
     if( !fileExtensions.includes(type) ) return res.status(400).send({ fileUploaded: false, error: 'Invalid file extension', extension: type, availableExtensions: fileExtensions });
 
     try {
-        await file.mv( `src/uploads/${filename}` );
+        await file.mv( `src/uploads/profileImages/${filename}` );
         res.status(200).send({ fileUploaded: true, filename: `${filename}` });
 
     } catch (error) {
